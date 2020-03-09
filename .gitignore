@@ -1,0 +1,12 @@
+.qmake.stash
+Makefile*
+*.sln
+*.user
+.vs/*
+*/debug/*
+*/release/*
+*/x64/*
+*/Win32/*
+*.filters
+*.vcxproj
+*.bat
