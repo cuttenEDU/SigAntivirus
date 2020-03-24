@@ -1,25 +1,10 @@
 #undef QT_TESTCASE_BUILDDIR
-#include <QtTest>
+
 
 // add necessary includes here
-#include "sigbaseio.h"
+#include <tst_baseiotest.h>
 
-class BaseIOTest : public QObject
-{
-    Q_OBJECT
 
-public:
-    BaseIOTest();
-    ~BaseIOTest();
-    SigBaseIO s;
-
-private slots:
-    void initTestCase();
-    void cleanupTestCase();
-    void test_case1();
-    void test_case2();
-
-};
 
 BaseIOTest::BaseIOTest()
 {
@@ -43,7 +28,7 @@ void BaseIOTest::cleanupTestCase()
 
 void BaseIOTest::test_case1()
 {
-    
+
     QCOMPARE(s.return2(), 2);
 }
 
@@ -53,6 +38,7 @@ void BaseIOTest::test_case2()
     QCOMPARE(s.returnhw(), std::string("Hella world!"));
 }
 
-QTEST_APPLESS_MAIN(BaseIOTest)
+//QTEST_APPLESS_MAIN(BaseIOTest)
+QTEST_MAIN(BaseIOTest)
 
-#include "tst_baseiotest.moc"
+//#include "tst_baseiotest.moc"

@@ -13,3 +13,6 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../SigBaseIO/debug/
 
 INCLUDEPATH += $$PWD/../SigBaseIO
 DEPENDPATH += $$PWD/../SigBaseIO
+
+HEADERS += \
+    tst_baseiotest.h

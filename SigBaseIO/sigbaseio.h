@@ -7,9 +7,10 @@
 class SIGBASEIO_EXPORT SigBaseIO
 {
 public:
-    SigBaseIO();
-    int return2();
-    std::string returnhw();
+	SigBaseIO();
+	int return2();
+	std::string returnhw();
+	
 };
 
 #endif // SIGBASEIO_H
