@@ -5,6 +5,8 @@
 #include <string>
 #include <QTCore>
 
+
+
 struct SIGIO_EXPORT Record
 {
 	unsigned recLen;
@@ -36,19 +38,18 @@ public:
 	
 	unsigned fileoffs = 7;
 	
-	
 	Record* readRecord(unsigned recIndex);
 	int writeRecord(Record r);
 	int deleteRecord(unsigned recIndex);
-
+	bool is_prefix_valid() const;
 
 private:
+	bool isPrefixValid;
 	unsigned currentRec;
 	bool isEof;
 	QFile* basefile;
 	QDataStream* fileStream;
 	unsigned findRecInd(unsigned recIndex);
-	
 };
 
 QDataStream& operator << (QDataStream& ds, const Record& r);

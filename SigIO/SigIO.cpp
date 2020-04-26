@@ -1,5 +1,5 @@
 #include "SigIO.h"
-
+#include <QDebug>
 
 QString* Record::toString()
 {
@@ -30,27 +30,42 @@ SigFileIO::SigFileIO(QString fileName)
 {
 	basefile = new QFile(fileName);
 	basefile->open(QIODevice::ReadWrite);
-	basefile->seek(fileoffs);
 	fileStream = new QDataStream(basefile);
+	basefile->seek(0);
+	isPrefixValid = true;
+	if (basefile->size() == 0)
+		//*fileStream << "zhmakin";
+		basefile->write("zhmakin",7);
+	else
+	{
+		QString pref;
+		*fileStream >> pref;
+		if (pref.compare("zhmakin"))
+			basefile->seek(fileoffs);
+		
+		else
+			isPrefixValid = false;
+	}
+
 	currentRec = 1;
 }
 
 Record* SigFileIO::readRecord(unsigned recIndex)
 {
-	if (isEof)
+	if (isEof || recIndex > currentRec)
 	{
 		basefile->seek(fileoffs);
 		currentRec = 1;
+		isEof = false;
 	}
 	Record* r = new Record();
-	do
+	*fileStream >> *r;
+	while (currentRec != recIndex)
 	{
-		*fileStream >> *r;
 		currentRec++;
+		*fileStream >> *r;
 	}
-	while (currentRec != recIndex);
 	return r;
-
 }
 
 int SigFileIO::writeRecord(Record r)
@@ -63,34 +78,58 @@ int SigFileIO::writeRecord(Record r)
 
 int SigFileIO::deleteRecord(unsigned recIndex)
 {
-    return 0;
+	return 0;
 }
 
-QDataStream& operator << (QDataStream& ds, const Record& r)
+
+bool SigFileIO::is_prefix_valid() const
 {
+	return isPrefixValid;
+}
+
+QDataStream& operator <<(QDataStream& ds, const Record& r)
+{
+	//TODO: redo to read raw data(cause of serialization)
+	qDebug() << "write positions:";
+	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.recLen;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.nameLen;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.name;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.sigLen;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds.writeRawData(r.pref, sizeof(r.pref));
+	qDebug() << ((QFile)ds.device()).pos();
 	ds.writeRawData(r.hash, sizeof(r.hash));
+	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.strtoffs;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.endoffs;
+	qDebug() << ((QFile)ds.device()).pos();
 	return ds;
 }
 
-QDataStream& operator >> (QDataStream& ds, Record& r)
+QDataStream& operator >>(QDataStream& ds, Record& r)
 {
+	//TODO: redo to read raw data(cause of serialization)
+	qDebug() << "read positions:";
 	ds >> r.recLen;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.nameLen;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.name;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.sigLen;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds.readRawData(r.pref, sizeof(r.pref));
+	qDebug() << ((QFile)ds.device()).pos();
 	ds.readRawData(r.hash, sizeof(r.hash));
+	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.strtoffs;
+	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.endoffs;
+	qDebug() << ((QFile)ds.device()).pos();
 	return ds;
 }
-
-
-
