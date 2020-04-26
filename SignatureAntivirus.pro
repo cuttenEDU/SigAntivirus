@@ -1,5 +1,5 @@
 TEMPLATE = subdirs
 
 SUBDIRS += \
-    SigBaseIO \
-    SigBaseIOTest
+    SigIO \
+    SigIOTest

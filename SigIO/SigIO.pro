@@ -1,7 +1,7 @@
 QT -= gui
 
 TEMPLATE = lib
-DEFINES += SIGBASEIO_LIBRARY
+DEFINES += SIGIO_LIBRARY
 
 CONFIG += c++11
 
@@ -17,11 +17,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    sigbaseio.cpp
+    sigio.cpp
 
 HEADERS += \
-    SigBaseIO_global.h \
-    sigbaseio.h
+    SigIO_global.h \
+    sigio.h
 
 # Default rules for deployment.
 unix {
