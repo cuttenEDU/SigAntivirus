@@ -18,6 +18,10 @@ struct SIGIO_EXPORT Record
 	unsigned strtoffs;
 	unsigned endoffs;
 
+	
+
+
+	
 	QString* toString();
 };
 

@@ -91,23 +91,14 @@ QDataStream& operator <<(QDataStream& ds, const Record& r)
 {
 	//TODO: redo to read raw data(cause of serialization)
 	qDebug() << "write positions:";
-	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.recLen;
-	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.nameLen;
-	qDebug() << ((QFile)ds.device()).pos();
-	ds << r.name;
-	qDebug() << ((QFile)ds.device()).pos();
+	ds.writeRawData(r.name,r.nameLen);
 	ds << r.sigLen;
-	qDebug() << ((QFile)ds.device()).pos();
 	ds.writeRawData(r.pref, sizeof(r.pref));
-	qDebug() << ((QFile)ds.device()).pos();
 	ds.writeRawData(r.hash, sizeof(r.hash));
-	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.strtoffs;
-	qDebug() << ((QFile)ds.device()).pos();
 	ds << r.endoffs;
-	qDebug() << ((QFile)ds.device()).pos();
 	return ds;
 }
 
@@ -116,20 +107,13 @@ QDataStream& operator >>(QDataStream& ds, Record& r)
 	//TODO: redo to read raw data(cause of serialization)
 	qDebug() << "read positions:";
 	ds >> r.recLen;
-	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.nameLen;
-	qDebug() << ((QFile)ds.device()).pos();
-	ds >> r.name;
-	qDebug() << ((QFile)ds.device()).pos();
+	r.name = new char[r.nameLen];
+	ds.readRawData(r.name,r.nameLen);
 	ds >> r.sigLen;
-	qDebug() << ((QFile)ds.device()).pos();
 	ds.readRawData(r.pref, sizeof(r.pref));
-	qDebug() << ((QFile)ds.device()).pos();
 	ds.readRawData(r.hash, sizeof(r.hash));
-	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.strtoffs;
-	qDebug() << ((QFile)ds.device()).pos();
 	ds >> r.endoffs;
-	qDebug() << ((QFile)ds.device()).pos();
 	return ds;
 }
