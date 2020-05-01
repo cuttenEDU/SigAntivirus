@@ -9,8 +9,8 @@ class IOTest : public QObject
 public:
     IOTest();
     ~IOTest();
-    Record r1;
-    Record r2;
+    Record* r1;
+    Record* r2;
     Record* readr1;
     Record* readr2;
     SigFileIO* fio;

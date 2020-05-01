@@ -4,26 +4,10 @@
 #include "SigIO_global.h"
 #include <string>
 #include <QTCore>
+#include "Record.h"
 
 
 
-struct SIGIO_EXPORT Record
-{
-	unsigned recLen;
-	unsigned nameLen;
-	char* name;
-	unsigned sigLen;
-	char pref[50];
-	char hash[32];
-	unsigned strtoffs;
-	unsigned endoffs;
-
-	
-
-
-	
-	QString* toString();
-};
 
 class SIGIO_EXPORT SigIO
 {
@@ -31,7 +15,7 @@ public:
 	SigIO();
 	unsigned recCount;
 	virtual Record* readRecord(unsigned recIndex) = 0;
-	virtual int writeRecord(Record r) = 0;
+	virtual int writeRecord(Record* r) = 0;
 	virtual int deleteRecord(unsigned recIndex) = 0;
 };
 
@@ -43,7 +27,7 @@ public:
 	unsigned fileoffs = 7;
 	
 	Record* readRecord(unsigned recIndex);
-	int writeRecord(Record r);
+	int writeRecord(Record* r);
 	int deleteRecord(unsigned recIndex);
 	bool is_prefix_valid() const;
 

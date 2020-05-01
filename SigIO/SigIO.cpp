@@ -1,26 +1,9 @@
 #include "SigIO.h"
 #include <QDebug>
 
-QString* Record::toString()
-{
-	QString* str = new QString("Record size: ");
-	*str += this->recLen;
-	*str += "\nName size: ";
-	*str += this->nameLen;
-	*str += "\nName: ";
-	*str += this->name;
-	*str += "\nSignature size: ";
-	*str += this->sigLen;
-	*str += "\nPrefix: ";
-	*str += this->pref;
-	*str += "\nHash: ";
-	*str += this->hash;
-	*str += "\nStart offset: ";
-	*str += this->strtoffs;
-	*str += "\nEnd offset: ";
-	*str += this->endoffs;
-	return str;
-}
+
+
+
 
 SigIO::SigIO()
 {
@@ -58,7 +41,7 @@ Record* SigFileIO::readRecord(unsigned recIndex)
 		currentRec = 1;
 		isEof = false;
 	}
-	Record* r = new Record();
+	Record* r = new Record(0,0,0,0,0,0);
 	*fileStream >> *r;
 	while (currentRec != recIndex)
 	{
@@ -68,11 +51,11 @@ Record* SigFileIO::readRecord(unsigned recIndex)
 	return r;
 }
 
-int SigFileIO::writeRecord(Record r)
+int SigFileIO::writeRecord(Record* r)
 {
 	basefile->seek(basefile->size());
 	isEof = true;
-	*fileStream << r;
+	*fileStream << *r;
 	return 0;
 }
 
@@ -89,31 +72,47 @@ bool SigFileIO::is_prefix_valid() const
 
 QDataStream& operator <<(QDataStream& ds, const Record& r)
 {
-	//TODO: redo to read raw data(cause of serialization)
-	qDebug() << "write positions:";
-	ds << r.recLen;
-	ds << r.nameLen;
-	ds.writeRawData(r.name,r.nameLen);
-	ds << r.sigLen;
-	ds.writeRawData(r.pref, sizeof(r.pref));
-	ds.writeRawData(r.hash, sizeof(r.hash));
-	ds << r.strtoffs;
-	ds << r.endoffs;
+	//qDebug() << "write positions:";
+	unsigned nlen = r.getNameLen();
+	ds << r.getSize();
+	ds << nlen;
+	ds.writeRawData(r.getRawName(), nlen);
+	ds << r.getSigLen();
+	ds.writeRawData(r.getRawPref(), PREF_SIZE);
+	ds.writeRawData(r.getRawHash(), HASH_SIZE);
+	ds << r.getStrtOffs();
+	ds << r.getStrtOffs();
 	return ds;
 }
 
 QDataStream& operator >>(QDataStream& ds, Record& r)
 {
-	//TODO: redo to read raw data(cause of serialization)
-	qDebug() << "read positions:";
-	ds >> r.recLen;
-	ds >> r.nameLen;
-	r.name = new char[r.nameLen];
-	ds.readRawData(r.name,r.nameLen);
-	ds >> r.sigLen;
-	ds.readRawData(r.pref, sizeof(r.pref));
-	ds.readRawData(r.hash, sizeof(r.hash));
-	ds >> r.strtoffs;
-	ds >> r.endoffs;
+	//qDebug() << "read positions:";
+	unsigned n;
+	ds >> n;
+	ds >> n;
+	char* buff = new char[n+1];
+	buff[n] = '\0';
+	ds.readRawData(buff, n);
+	QString* s = new QString(buff);
+	//TODO: а нужно удалять этот кустринг и байт эррэи далее?
+	r.setName(s);
+	ds >> n;
+	r.setSigLen(n);
+	delete[] buff;
+	buff = new char[PREF_SIZE];
+	ds.readRawData(buff, PREF_SIZE);
+	QByteArray* ba = new QByteArray(buff, PREF_SIZE);
+	r.setPref(ba);
+	delete[] buff;
+	buff = new char[HASH_SIZE];
+	ds.readRawData(buff, HASH_SIZE);
+	ba = new QByteArray(buff, HASH_SIZE);
+	r.setHash(ba);
+	ds >> n;
+	r.setStrtOffs(n);
+	ds >> n;
+	r.setEndOffs(n);
+	delete[] buff;
 	return ds;
 }

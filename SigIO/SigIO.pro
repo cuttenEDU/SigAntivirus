@@ -17,9 +17,11 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    Record.cpp \
     sigio.cpp
 
 HEADERS += \
+    Record.h \
     SigIO_global.h \
     sigio.h
 
