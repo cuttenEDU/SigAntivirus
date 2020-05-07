@@ -18,18 +18,19 @@ class SIGIO_EXPORT Record : public QObject
 
 	public:
 	Record(QString* name, unsigned sig_len, QByteArray* pref,
-		QByteArray* hash, unsigned strtoffs, unsigned endoffs)
-		: name(name),
+		QByteArray* hash, unsigned strtoffs, unsigned endoffs, QObject* parent = 0)
+		: QObject(parent),
+		  name(name),
 		  sigLen(sig_len),
 		  pref(pref),
 		  hash(hash),
 		  strtoffs(strtoffs),
 		  endoffs(endoffs)
+		  
 	{
 	}
 	Record();
 	~Record();
-	//Record() :name(0), sigLen(0), pref(0), hash(0), strtoffs(0), endoffs(0) {};
 	int getSize() const;
 	unsigned getRecLen() const;
 	unsigned Record::getNameLen() const;
@@ -48,7 +49,7 @@ class SIGIO_EXPORT Record : public QObject
 	void setHash(QByteArray* hash);
 	const char* getRawPref() const;
 	const char* getRawHash() const;
-	const char* getRawName() const;
+	QByteArray getRawName() const;
 	QString* toString();
 	
 private:

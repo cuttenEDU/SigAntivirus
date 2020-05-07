@@ -5,62 +5,56 @@
 
 
 
-SigIO::SigIO()
+SigIO::SigIO(QObject* parent) : QObject(parent)
 {
 }
 
-SigFileIO::SigFileIO(QString fileName)
+SigFileIO::SigFileIO(QString fileName,QObject* parent) : SigIO(parent)
 {
-	basefile = new QFile(fileName);
+	basefile = new QFile(fileName,this);
 	basefile->open(QIODevice::ReadWrite);
 	fileStream = new QDataStream(basefile);
 	basefile->seek(0);
 	isPrefixValid = true;
+	int asd = 0;
 	if (basefile->size() == 0)
-		//*fileStream << "zhmakin";
-		basefile->write("zhmakin",7);
+	{
+		basefile->write("zhmakin", 7);
+		basefile->write((const char*)&asd, 4);
+	}
 	else
 	{
 		QString pref;
 		*fileStream >> pref;
 		if (pref.compare("zhmakin"))
 			basefile->seek(fileoffs);
-		
 		else
 			isPrefixValid = false;
 	}
-
-	currentRec = 1;
+	currentRec = 0;
 }
+
 
 Record* SigFileIO::readRecord(unsigned recIndex)
 {
-	if (isEof || recIndex > currentRec)
-	{
-		basefile->seek(fileoffs);
-		currentRec = 1;
-		isEof = false;
-	}
-	Record* r = new Record(0,0,0,0,0,0);
+	seekRec(recIndex);
+	Record* r = new Record();
 	*fileStream >> *r;
-	while (currentRec != recIndex)
-	{
-		currentRec++;
-		*fileStream >> *r;
-	}
 	return r;
 }
 
 int SigFileIO::writeRecord(Record* r)
 {
-	basefile->seek(basefile->size());
+	seekEnd();
 	isEof = true;
 	*fileStream << *r;
-	return 0;
+	//basefile->seek(fileoffs + 15);
+	return fileStream->status();
 }
 
 int SigFileIO::deleteRecord(unsigned recIndex)
 {
+	
 	return 0;
 }
 
@@ -70,10 +64,28 @@ bool SigFileIO::is_prefix_valid() const
 	return isPrefixValid;
 }
 
+void SigFileIO::seekRec(unsigned recIndex)
+{
+	qDebug() << "seeking to rec #" << recIndex;
+	basefile->seek(fileoffs);
+	for (int i = 0; i < recIndex; ++i)
+	{
+		unsigned recLen = 0;
+		*fileStream >> recLen;
+		qDebug() << "reclen=" << recLen;
+		basefile->seek(basefile->pos() + recLen);
+	}
+	qDebug() <<"filepos="<< basefile->pos();
+}
+
+void SigFileIO::seekEnd()
+{
+	basefile->seek(basefile->size());
+}
+
 QDataStream& operator <<(QDataStream& ds, const Record& r)
 {
-	//qDebug() << "write positions:";
-	unsigned nlen = r.getNameLen();
+	qint32 nlen = r.getNameLen();
 	ds << r.getSize();
 	ds << nlen;
 	ds.writeRawData(r.getRawName(), nlen);
@@ -81,21 +93,19 @@ QDataStream& operator <<(QDataStream& ds, const Record& r)
 	ds.writeRawData(r.getRawPref(), PREF_SIZE);
 	ds.writeRawData(r.getRawHash(), HASH_SIZE);
 	ds << r.getStrtOffs();
-	ds << r.getStrtOffs();
+	ds << r.getEndOffs();
 	return ds;
 }
 
 QDataStream& operator >>(QDataStream& ds, Record& r)
 {
-	//qDebug() << "read positions:";
 	unsigned n;
-	ds >> n;
+	ds >> n; // recsize read, but its not stored in class
 	ds >> n;
 	char* buff = new char[n+1];
 	buff[n] = '\0';
 	ds.readRawData(buff, n);
 	QString* s = new QString(buff);
-	//TODO: а нужно удалять этот кустринг и байт эррэи далее?
 	r.setName(s);
 	ds >> n;
 	r.setSigLen(n);

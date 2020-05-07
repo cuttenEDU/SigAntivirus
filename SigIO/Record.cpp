@@ -1,17 +1,16 @@
 #include "Record.h"
 
-Record::Record()
-{
-	
-}
-Record::~Record()
-{
+Record::Record() {
 
 }
+
+Record::~Record() {
+
+}
+
 //TODO: исправить, некорректно отображает числовые значения
-QString* Record::toString()
-{
-	QString* str = new QString("Record size: ");
+QString* Record::toString() {
+	QString *str = new QString("Record size: ");
 	*str += QString(this->getSize());
 	*str += "\nName size: ";
 	*str += QString(this->getNameLen());
@@ -30,10 +29,10 @@ QString* Record::toString()
 	return str;
 }
 
-unsigned Record::getNameLen() const
-{
+unsigned Record::getNameLen() const {
 	return name->size();
 }
+
 //
 //void Record::setNameLen(unsigned name_len)
 //{
@@ -41,89 +40,72 @@ unsigned Record::getNameLen() const
 //}
 
 
-
-unsigned Record::getSigLen() const
-{
+unsigned Record::getSigLen() const {
 	return sigLen;
 }
 
-void Record::setSigLen(unsigned sig_len)
-{
+void Record::setSigLen(unsigned sig_len) {
 	sigLen = sig_len;
 }
 
 
-unsigned Record::getStrtOffs() const
-{
+unsigned Record::getStrtOffs() const {
 	return strtoffs;
 }
 
-void Record::setStrtOffs(unsigned strtoffs)
-{
+void Record::setStrtOffs(unsigned strtoffs) {
 	strtoffs = strtoffs;
 }
 
-unsigned Record::getEndOffs() const
-{
+unsigned Record::getEndOffs() const {
 	return endoffs;
 }
 
-void Record::setEndOffs(unsigned endoffs)
-{
+void Record::setEndOffs(unsigned endoffs) {
 	endoffs = endoffs;
 }
 
-QString* Record::getName()
-{
+QString* Record::getName() {
 	return name;
 }
 
-void Record::setName(QString* chars)
-{
+void Record::setName(QString *chars) {
 	name = chars;
 }
 
-QByteArray* Record::getPref()
-{
+QByteArray* Record::getPref() {
 	return pref;
 }
 
-void Record::setPref(QByteArray* pref)
-{
+void Record::setPref(QByteArray *pref) {
 	this->pref = pref;
 }
 
-QByteArray* Record::getHash()
-{
+QByteArray* Record::getHash() {
 	return hash;
 }
 
-void Record::setHash(QByteArray* hash)
-{
+void Record::setHash(QByteArray *hash) {
 	this->hash = hash;
 }
 
 
-const char* Record::getRawPref() const
-{
+const char* Record::getRawPref() const {
 	return pref->data();
 }
 
 
-const char* Record::getRawHash() const
-{
+const char* Record::getRawHash() const {
 	return hash->data();
 }
 
-const char* Record::getRawName() const
-{
-	return name->toLocal8Bit().data();
+QByteArray Record::getRawName() const {
+	return name->toLocal8Bit();
 }
 
 
-int Record::getSize() const
-{
-	int l;
+int Record::getSize() const {
+	int l = 0; // size of record is also stored in file
 	l += sizeof(getNameLen());
 	l += name->size();
 	l += sizeof(sigLen);

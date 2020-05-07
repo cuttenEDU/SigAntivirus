@@ -6,13 +6,15 @@
 #include <QTCore>
 #include "Record.h"
 
+#define PREF_LEN 7
+#define AMNT_LEN sizeof(unsigned)
 
 
-
-class SIGIO_EXPORT SigIO
+class SIGIO_EXPORT SigIO : public QObject
 {
+	Q_OBJECT
 public:
-	SigIO();
+	SigIO(QObject* parent = nullptr);
 	unsigned recCount;
 	virtual Record* readRecord(unsigned recIndex) = 0;
 	virtual int writeRecord(Record* r) = 0;
@@ -22,9 +24,9 @@ public:
 class SIGIO_EXPORT SigFileIO : public SigIO
 {
 public:
-	SigFileIO(QString fileName);
+	SigFileIO(QString fileName, QObject* parent = nullptr);
 	
-	unsigned fileoffs = 7;
+	unsigned fileoffs = PREF_LEN + AMNT_LEN;
 	
 	Record* readRecord(unsigned recIndex);
 	int writeRecord(Record* r);
@@ -37,8 +39,12 @@ private:
 	bool isEof;
 	QFile* basefile;
 	QDataStream* fileStream;
-	unsigned findRecInd(unsigned recIndex);
+	void seekRec(unsigned recIndex);
+	void seekEnd();
 };
+
+
+
 
 QDataStream& operator << (QDataStream& ds, const Record& r);
 QDataStream& operator >> (QDataStream& ds, Record& r);
