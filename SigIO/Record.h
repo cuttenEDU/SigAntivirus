@@ -1,7 +1,6 @@
 #pragma once
 #include "SigIO_global.h"
 #include <QTCore>
-#include <array>
 
 #define PREF_SIZE 25
 #define HASH_SIZE 32

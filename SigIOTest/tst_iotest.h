@@ -11,8 +11,11 @@ public:
     ~IOTest();
     Record* r1;
     Record* r2;
+    Record* r3;
+    Record* r4;
     Record* readr1;
     Record* readr2;
+    Record* readr3;
     SigFileIO* fio;
 	
 private slots:

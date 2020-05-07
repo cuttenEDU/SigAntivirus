@@ -1,16 +1,16 @@
 #include "SigIO.h"
 #include <QDebug>
 
-
-
-
-
 SigIO::SigIO(QObject* parent) : QObject(parent)
 {
 }
 
+SigFileIO::SigFileIO(QObject *parent) {
+}
+
 SigFileIO::SigFileIO(QString fileName,QObject* parent) : SigIO(parent)
 {
+	
 	basefile = new QFile(fileName,this);
 	basefile->open(QIODevice::ReadWrite);
 	fileStream = new QDataStream(basefile);
@@ -20,7 +20,7 @@ SigFileIO::SigFileIO(QString fileName,QObject* parent) : SigIO(parent)
 	if (basefile->size() == 0)
 	{
 		basefile->write("zhmakin", 7);
-		basefile->write((const char*)&asd, 4);
+		basefile->write((const char*)&asd, sizeof(asd));
 	}
 	else
 	{
@@ -35,9 +35,17 @@ SigFileIO::SigFileIO(QString fileName,QObject* parent) : SigIO(parent)
 }
 
 
+
+
 Record* SigFileIO::readRecord(unsigned recIndex)
 {
 	seekRec(recIndex);
+	return readRecord();
+}
+
+Record * SigFileIO::readRecord() {
+	if (basefile->atEnd())
+		return nullptr;
 	Record* r = new Record();
 	*fileStream >> *r;
 	return r;
@@ -46,17 +54,15 @@ Record* SigFileIO::readRecord(unsigned recIndex)
 int SigFileIO::writeRecord(Record* r)
 {
 	seekEnd();
-	isEof = true;
+	eof = true;
 	*fileStream << *r;
+	int status = fileStream->status();
 	//basefile->seek(fileoffs + 15);
-	return fileStream->status();
+	return status;
 }
 
-int SigFileIO::deleteRecord(unsigned recIndex)
-{
-	
-	return 0;
-}
+
+
 
 
 bool SigFileIO::is_prefix_valid() const
@@ -64,18 +70,20 @@ bool SigFileIO::is_prefix_valid() const
 	return isPrefixValid;
 }
 
+bool SigFileIO::isEof() const {
+	return eof;
+}
+
+
 void SigFileIO::seekRec(unsigned recIndex)
 {
-	qDebug() << "seeking to rec #" << recIndex;
 	basefile->seek(fileoffs);
-	for (int i = 0; i < recIndex; ++i)
+	for (int i = 0; i < recIndex && !basefile->atEnd() ; ++i)
 	{
 		unsigned recLen = 0;
 		*fileStream >> recLen;
-		qDebug() << "reclen=" << recLen;
 		basefile->seek(basefile->pos() + recLen);
 	}
-	qDebug() <<"filepos="<< basefile->pos();
 }
 
 void SigFileIO::seekEnd()

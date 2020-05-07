@@ -17,26 +17,26 @@ public:
 	SigIO(QObject* parent = nullptr);
 	unsigned recCount;
 	virtual Record* readRecord(unsigned recIndex) = 0;
+	virtual Record* readRecord() = 0;
 	virtual int writeRecord(Record* r) = 0;
-	virtual int deleteRecord(unsigned recIndex) = 0;
 };
 
 class SIGIO_EXPORT SigFileIO : public SigIO
 {
 public:
+	SigFileIO(QObject* parent = nullptr);
 	SigFileIO(QString fileName, QObject* parent = nullptr);
-	
 	unsigned fileoffs = PREF_LEN + AMNT_LEN;
 	
 	Record* readRecord(unsigned recIndex);
+	Record* readRecord();
 	int writeRecord(Record* r);
-	int deleteRecord(unsigned recIndex);
 	bool is_prefix_valid() const;
-
+	bool isEof() const;
 private:
 	bool isPrefixValid;
 	unsigned currentRec;
-	bool isEof;
+	bool eof;
 	QFile* basefile;
 	QDataStream* fileStream;
 	void seekRec(unsigned recIndex);

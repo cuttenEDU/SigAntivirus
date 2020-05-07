@@ -11,21 +11,21 @@ Record::~Record() {
 //TODO: исправить, некорректно отображает числовые значения
 QString* Record::toString() {
 	QString *str = new QString("Record size: ");
-	*str += QString(this->getSize());
-	*str += "\nName size: ";
-	*str += QString(this->getNameLen());
-	*str += "\nName: ";
-	*str += this->getName();
-	*str += "\nSignature size: ";
-	*str += QString(this->getSigLen());
-	*str += "\nPrefix: ";
-	*str += this->getRawPref();
-	*str += "\nHash: ";
-	*str += this->getRawHash();
-	*str += "\nStart offset: ";
-	*str += this->getStrtOffs();
-	*str += "\nEnd offset: ";
-	*str += this->getEndOffs();
+	str->append(QString::number(this->getSize()));
+	str->append("\nName size: ");
+	str->append(QString::number(this->getNameLen()));
+	str->append("\nName: ");
+	str->append(this->getName());
+	str->append("\nSignature size: ");
+	str->append(QString::number(this->getSigLen()));
+	str->append("\nPrefix: ");
+	str->append(this->getRawPref());
+	str->append("\nHash: ");
+	str->append(this->getRawHash());
+	str->append("\nStart offset: ");
+	str->append(QString::number(this->getStrtOffs()));
+	str->append("\nEnd offset: ");
+	str->append(QString::number(this->getEndOffs()));
 	return str;
 }
 
