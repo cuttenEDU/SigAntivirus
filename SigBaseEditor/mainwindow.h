@@ -22,7 +22,8 @@ private:
     Ui::MainWindow *ui;
     SigFileIO file;
     unsigned recAmount;
-
+    RecordModel* recordModel;
+    //void MainWindow::resizeEvent(QResizeEvent* event) override;
 public slots:
     void loadBase();
 

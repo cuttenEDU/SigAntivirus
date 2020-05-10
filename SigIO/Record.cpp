@@ -54,7 +54,7 @@ unsigned Record::getStrtOffs() const {
 }
 
 void Record::setStrtOffs(unsigned strtoffs) {
-	strtoffs = strtoffs;
+	this->strtoffs = strtoffs;
 }
 
 unsigned Record::getEndOffs() const {
@@ -62,7 +62,7 @@ unsigned Record::getEndOffs() const {
 }
 
 void Record::setEndOffs(unsigned endoffs) {
-	endoffs = endoffs;
+	this->endoffs = endoffs;
 }
 
 QString* Record::getName() {
