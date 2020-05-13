@@ -16,15 +16,21 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    adddialog.cpp \
+    hexview.cpp \
     main.cpp \
     mainwindow.cpp \
     recordmodel.cpp
 
 HEADERS += \
+    adddialog.h \
+    hexview.h \
     mainwindow.h \
     recordmodel.h
 
 FORMS += \
+    adddialog.ui \
+    hexview.ui \
     mainwindow.ui
 
 # Default rules for deployment.
@@ -38,3 +44,10 @@ else:unix: LIBS += -L$$OUT_PWD/../SigIO/ -lSigIO
 
 INCLUDEPATH += $$PWD/../SigIO
 DEPENDPATH += $$PWD/../SigIO
+
+win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../QHexEdit/release/ -lQHexEdit
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../QHexEdit/debug/ -lQHexEdit
+else:unix: LIBS += -L$$OUT_PWD/../QHexEdit/ -lQHexEdit
+
+INCLUDEPATH += $$PWD/../QHexEdit
+DEPENDPATH += $$PWD/../QHexEdit

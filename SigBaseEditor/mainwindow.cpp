@@ -8,8 +8,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent)
 	recordModel = new RecordModel();
 	ui->tableView->setModel(recordModel);
 	ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 	connect(ui->openBaseButton, SIGNAL(triggered()), SLOT(loadBase()));
-	connect(ui->addButton, SIGNAL(clicked()), recordModel, SLOT(AppendTestRecord()));
+	connect(ui->addButton, SIGNAL(clicked()), SLOT(openAddWindow()));
+	connect(this, SIGNAL(recordLoaded(Record*)), recordModel, SLOT(AppendRecord(Record*)));
 }
 
 MainWindow::~MainWindow() {
@@ -17,38 +19,35 @@ MainWindow::~MainWindow() {
 }
 
 
+
+
 void MainWindow::loadBase() {
 	
-	recordModel->recList.append(new Record(new QString("cool record 55"), 200, new QByteArray(PREF_SIZE, 'p'), new QByteArray(HASH_SIZE, 'h'),
-		233, 412));
-	QModelIndex topLeft = recordModel->index(0, 0);
-	QModelIndex bottomRight = recordModel->index(recordModel->rowCount()-1, recordModel->columnCount()-1);
-	emit recordModel->dataChanged(topLeft, bottomRight);
-	//QString *fileName = new QString(QFileDialog::getOpenFileName(this, tr("Открыть файл базы..."),
-	                                                             //".",
-	                                                             //tr("Файл базы данных сигнатур (.edb)")));
+
+	QString *fileName = new QString(QFileDialog::getOpenFileName(this, tr(u8"Открыть файл базы..."),
+	                                                             ".",
+	                                                             tr(u8"Файл базы данных сигнатур (*.edb)")));
 	//TODO: чтение из файла, но были более большие идеи...
-	//while (true) {
-	//	Record *r = file.readRecord();
-	//	if (r == nullptr)
-	//		break;
-	//	recordModel->AppendRecord(r);
-	//	recAmount++;
-	//}
+	
+	if (!fileName->isEmpty()) {
+		file = new SigFileIO(*fileName);
+		if (!file->is_prefix_valid()) {
+			QMessageBox::critical(this, tr(u8"Ошибка!"), tr(u8"Выбранный файл не является подходящей базой данных для данной утилиты"));
+			return;
+		}
+		while (true) {
+			Record* r = file->readRecord();
+			if (r == nullptr)
+				break;
+			emit recordLoaded(r);
+			recAmount++;
+		}
+		this->setWindowTitle(*fileName + QString(" - ") + W_TITLE);
+	}
 	
 }
 
-//void MainWindow::resizeEvent(QResizeEvent* event) {
-//	QMainWindow::resizeEvent(event);
-//	int width = ui->tableView->width();
-//	qDebug() << width;
-//	ui->tableView->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
-//	ui->tableView->setColumnWidth(0, width * 0.38);
-//	ui->tableView->setColumnWidth(1, width * 0.1);
-//	ui->tableView->setColumnWidth(2, width * 0.2);
-//	ui->tableView->setColumnWidth(3, width * 0.2);
-//	ui->tableView->setColumnWidth(4, width * 0.05);
-//	ui->tableView->setColumnWidth(5, width * 0.05);
-//
-//	
-//}
+void MainWindow::openAddWindow() {
+	AddDialog* ad = new AddDialog();
+	ad->show();
+}

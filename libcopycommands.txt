@@ -1,1 +1,6 @@
-copy /y $(ProjectDir)debug\SigIO.dll $(SolutionDir)SigIOTest\debug
+SigIO:
+copy /y $(ProjectDir)debug\SigIO.dll $(SolutionDir)SigIOTest\debug\
+copy /y $(ProjectDir)debug\SigIO.dll $(SolutionDir)SigBaseEditor\debug\
+
+Hexview:
+copy /y $(SolutionDir)lib\qhexeditd4.dll $(SolutionDir)SigBaseEditor\debug\

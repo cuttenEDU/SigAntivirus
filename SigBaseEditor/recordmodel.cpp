@@ -122,14 +122,14 @@ void RecordModel::AppendRecord(Record *r) {
 	recList.append(r);
 	endInsertRows();
 }
-void RecordModel::AppendTestRecord() {
-	Record* r = new Record(new QString("This is a test record"), 200, new QByteArray(PREF_SIZE, 'p'),
-		new QByteArray(HASH_SIZE, 'h'),
-		233, 412,this);
-	int row = recList.size();
-	beginInsertRows(QModelIndex(), row, row);
-	recList.append(r);
-	endInsertRows();
-}
+//void RecordModel::AppendTestRecord() {
+//	Record* r = new Record(new QString("This is a test record"), 200, new QByteArray(PREF_SIZE, 'p'),
+//		new QByteArray(HASH_SIZE, 'h'),
+//		233, 412,this);
+//	int row = recList.size();
+//	beginInsertRows(QModelIndex(), row, row);
+//	recList.append(r);
+//	endInsertRows();
+//}
 
  

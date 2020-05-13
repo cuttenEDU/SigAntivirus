@@ -24,9 +24,10 @@ SigFileIO::SigFileIO(QString fileName,QObject* parent) : SigIO(parent)
 	}
 	else
 	{
-		QString pref;
-		*fileStream >> pref;
-		if (pref.compare("zhmakin"))
+		char* pref = new char[8];
+		pref[7] = '\0';
+		basefile->read(pref,7);
+		if (!strcmp(pref,"zhmakin"))
 			basefile->seek(fileoffs);
 		else
 			isPrefixValid = false;

@@ -17,13 +17,15 @@ public:
 	Qt::ItemFlags flags(const QModelIndex& index) const;
 	QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 	QList<Record*> recList;
-	void AppendRecord(Record* r);
+	
 	
 //private:
 
 public slots:
-	
-	void AppendTestRecord();
+	void AppendRecord(Record* r);
+	//void AppendTestRecord();
+
+
 	
 };
 
